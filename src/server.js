@@ -1,8 +1,9 @@
 const express   =  require("express");
 const cors      = require("cors");
 const mongoose  = require("mongoose");
+const path      = require("path");
 const app       =  express();
-const UserController = require("./controllers/UserController");
+const routes    = require("./routes");
 
 const PORT = process.env.PORT || 8000;
 
@@ -15,12 +16,6 @@ if(process.env.NODE_ENV !== "production"){
 app.use(cors());
 app.use(express.json());
 
-app.get ("/", (req, res) => {
-    res.send("Hello from express");
-    
-})
-
-app.post("/register", UserController.store);
 
 //https://developer.mozilla.org/hu/docs/Web/JavaScript/Reference/Statements/try...catch
 //try: Azok az utasítások, amelyek kivételt válthatnak ki.
@@ -35,6 +30,8 @@ try{
 }catch(error){
     console.log(error);
 }
+app.use("/files", express.static(path.resolve(__dirname, "..", "files")));
+app.use(routes);
 
 app.listen(PORT, () => {
     console.log(`Listening on Port: ${PORT}`);
