@@ -5,6 +5,7 @@ const EventSchema = new mongoose.Schema({
     description: String,
     price: Number,
     thumbnail: String,
+    sport: String,
     date: Date,
     //Megadjuk hogy melyik User kezeli az Eventet
     user: {                                 
