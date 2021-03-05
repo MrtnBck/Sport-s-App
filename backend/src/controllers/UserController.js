@@ -16,7 +16,13 @@ module.exports = {
                     email,
                     password: hashedPassword
                 });
-                return res.json(user);
+                return res.json({
+                    _id:user._id,
+                    email: user.email,
+                    firstName:user.firstName,
+                    lastName: user.lastName
+                    //Password hashelve van de nem küldjük el a kliensnek
+                });
             }
 
 
