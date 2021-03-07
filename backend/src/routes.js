@@ -21,19 +21,17 @@ routes.get ("/status", (req, res) => {
     
 });
 
-//TODO Registration Approval Controller
-//TODO Registration Rejection Controller
 
 //Registration
 routes.post("/registration/:eventId", RegistrationController.create);
 routes.get("/registration/:registration_id", RegistrationController.getRegistration);
+
+//Approval & Rejection
 routes.post("/registration/:registration_id/approvals", ApprovalController.approval);
 routes.post("/registration/:registration_id/rejections", RejectionController.rejection);
 
 //Login
 routes.post("/login", LoginController.store);
-
-
 
 //Dashboard
 routes.get("/dashboard/:sport", DashboardController.getAllEvents);
