@@ -7,6 +7,19 @@ const routes    = require("./routes");
 
 const PORT = process.env.PORT || 8000;
 
+//User Validation - TOKEN - EP09. -JSONWEBTOKEN
+
+//Add JWT token to project (OK)
+//Return token when login (OK)
+//Send token on request (OK)
+//Create function to project routers
+//Modify response to decode the token
+
+
+
+//END -User Validation - TOKEN
+
+
 //Ha szervert dev környzetben indítjuk el, akkor használja a .env fájlt
 if(process.env.NODE_ENV !== "production"){
     require("dotenv").config();

@@ -1,8 +1,9 @@
 //MODULES
-const express   =   require("express");
-const multer    =   require('multer');
+const express = require("express");
+const multer = require('multer');
+const verifyToken = require("./config/verifyToken");
 //FILES
-const routes    =   express.Router();
+const routes = express.Router();
 const UserController = require("./controllers/UserController");
 const EventController = require("./controllers/EventController");
 const DashboardController = require("./controllers/DashboardController");
@@ -13,12 +14,12 @@ const RejectionController = require("./controllers/RejectionController");
 
 
 //INSTANCES
-const uploadConfig  =   require("./config/upload");
+const uploadConfig = require("./config/upload");
 const upload = multer(uploadConfig);
 
-routes.get ("/status", (req, res) => {
-    res.send({status: 200});
-    
+routes.get("/status", (req, res) => {
+    res.send({ status: 200 });
+
 });
 
 
@@ -34,16 +35,17 @@ routes.post("/registration/:registration_id/rejections", RejectionController.rej
 routes.post("/login", LoginController.store);
 
 //Dashboard
-routes.get("/dashboard/:sport", DashboardController.getAllEvents);
-routes.get("/dashboard", DashboardController.getAllEvents);
-routes.get("/event/:eventId", DashboardController.getEventById);
+routes.get("/dashboard/:sport", verifyToken, DashboardController.getAllEvents);
+routes.get("/dashboard", verifyToken, DashboardController.getAllEvents);
+routes.get("/user/events", verifyToken, DashboardController.getEventsByUserId);
+routes.get("/event/:eventId", verifyToken, DashboardController.getEventById);
 
 //Event
-routes.post("/event", upload.single("thumbnail"), EventController.createEvent); //lementi a thumbnailt aztán az EventControllert meghívja
-routes.delete("/event/:eventId", EventController.delete);
+routes.post("/event", upload.single("thumbnail"),verifyToken, EventController.createEvent); //lementi a thumbnailt aztán az EventControllert meghívja
+routes.delete("/event/:eventId",verifyToken, EventController.delete);
 
 //User
 routes.post("/user/register", UserController.createUser);
-routes.get("/user/:user_id", UserController.getUserById );
+routes.get("/user/:user_id", UserController.getUserById);
 
 module.exports = routes;

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import api from "../../services/api";
-import { Button, Form, FormGroup, Container, Input } from 'reactstrap';
+import { Alert, Button, Form, FormGroup, Container, Input } from 'reactstrap';
 
 
 
@@ -10,22 +10,39 @@ export default function Register({history }){
     const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = async evt => {
       evt.preventDefault();  //Submitra klikknél nem frissíti az oldalt
-      console.log('result of the submit', email, password, firstName, lastName );
-
-      const response = await api.post("/user/register", {email, password, firstName, lastName});
-      const userId = response.data._id || false;
-
-      if(userId){
-        //Local storage
-        localStorage.setItem("user", userId);
-        history.push("/dashboard");
+      
+      //Form validation
+      if(email !== "" && password !== "" && firstName !== "" && lastName !== ""){
+        const response = await api.post("/user/register", {email, password, firstName, lastName});
+        const user = response.data || false;
+        const user_id = response.data.user_id || false;
+  
+        if(user && user_id){
+          //Local storage
+          localStorage.setItem("user", user);
+          localStorage.setItem("user_id", user_id);
+          history.push("/dashboard");
+        }else{
+          const {message} = response.data;
+          setError(true);
+          setErrorMessage(message);
+          setTimeout(() =>{
+            setError(false);
+            setErrorMessage("");
+          }, 2000)
+        }
       }else{
-        const {message} = response.data;
-        console.log(message);
+        setError(true);
+        setErrorMessage("You need to fill all the inputs!");
+        setTimeout(() =>{
+          setError(false);
+          setErrorMessage("");
+        }, 2000)
       }
     }
 
@@ -34,20 +51,30 @@ export default function Register({history }){
         <h2>Register:</h2>
         <p>Please <strong>Register</strong> for a new account</p>
         <Form onSubmit={handleSubmit}>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Input type="text" name="firstName" id="firstName" placeholder="Your first name" onChange ={evt =>setFirstName(evt.target.value)} />
+          <div className="input-group">
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Input type="text" name="firstName" id="firstName" placeholder="Your first name" onChange ={evt =>setFirstName(evt.target.value)} />
+            </FormGroup>
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Input type="text" name="lastName" id="lastName" placeholder="Your last name" onChange ={evt =>setLastName(evt.target.value)} />
+            </FormGroup>
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Input type="email" name="email" id="email" placeholder="Your email" onChange ={evt =>setEmail(evt.target.value)} />
+            </FormGroup>
+            <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+              <Input type="password" name="password" id="password" placeholder="Your password" onChange={evt => setPassword(evt.target.value)} />
+            </FormGroup>
+          </div>
+          <FormGroup>
+            <Button className = "submit-btn">Submit</Button>
           </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Input type="text" name="lastName" id="lastName" placeholder="Your last name" onChange ={evt =>setLastName(evt.target.value)} />
+          <FormGroup>
+            <Button className="secondary-btn" onClick={()=> history.push("/register")}>Login instead?</Button>
           </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Input type="email" name="email" id="email" placeholder="Your email" onChange ={evt =>setEmail(evt.target.value)} />
-          </FormGroup>
-          <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
-            <Input type="password" name="password" id="password" placeholder="Your password" onChange={evt => setPassword(evt.target.value)} />
-          </FormGroup>
-          <Button>Submit</Button>
         </Form>
+        {error ? (
+          <Alert className="event-validation" color="danger">{errorMessage}</Alert>
+        ) : "" }
       </Container>
     );
 }
